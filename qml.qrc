@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>IconButton.qml</file>
         <file>MainPage.qml</file>
         <file>LoginPage.qml</file>
     </qresource>

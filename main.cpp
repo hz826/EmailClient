@@ -8,7 +8,7 @@
 int main(int argc, char *argv[]) {
     QGuiApplication app(argc, argv);
 
-    qmlRegisterType<Listener>("Tooska", 1, 0, "Listener");
+    qmlRegisterType<Listener>("myEmailClient", 1, 0, "Listener");
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
@@ -20,9 +20,8 @@ int main(int argc, char *argv[]) {
 
     pListener->init_link(pLoader);
 
-    qDebug() << pListener;
-    qDebug() << pLoader;
-
+//    qDebug() << pListener;
+//    qDebug() << pLoader;
 
     /*********************************/
 
