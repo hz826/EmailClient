@@ -1,7 +1,20 @@
+#include <cstdio>
+#include <string>
+#include <cstdlib>
+#include "mySocket.h"
+typedef unsigned char uchar;
+using std::string;
 class Base64 {
     public:
-    static string Encode(string s);
-    static string Decode(string s);
+    enum Base64Option {
+        Base64Encoding = 0,
+        Base64UrlEncoding = 1,
+ 
+        KeepTrailingEquals = 0,
+        OmitTrailingEquals = 2
+    };
+    static string Encode(const string sourceData, int options = Base64Encoding);
+    static string Decode(const string sourceData, int options = Base64Encoding);
 };
 
 class SMTP {
