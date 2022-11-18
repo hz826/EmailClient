@@ -2,13 +2,21 @@
 #include <string>
 #include <cstdlib>
 #include "mySocket.h"
+#include "base64.h"
 using std::string;
 
 class SMTP {
-    public:
-    void Login(string emailServer, string fromAddress, string username, string password);
-    void SendEmail(string toAddress, string text);
+    private:
+    MySocket *smtpSock;
+    string _emailServer, _username, _password;
+    bool success_login;
+    void Login_and_Keep(string emailServer, string username, string password);
     void Quit();
+
+    public:
+    SMTP() {success_login = false;}
+    bool Login(string emailServer, string username, string password);
+    void SendEmail(string toAddress, string fromAddress, string subject, string text);
 };
 
 class POP3 {
