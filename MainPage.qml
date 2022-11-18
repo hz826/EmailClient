@@ -23,6 +23,7 @@ Rectangle {
             width: 90
             renderType: Text.NativeRendering
             text: "欢迎"
+            objectName: "read_info"
         }
 
         Row {
@@ -112,6 +113,7 @@ Rectangle {
                 width: parent.width - 20
                 renderType: Text.NativeRendering
                 text: "邮件内容加载中..."
+                objectName: "read_text"
             }
 
             Text {
@@ -121,6 +123,7 @@ Rectangle {
                 anchors.horizontalCenter: parent.horizontalCenter
                 renderType: Text.NativeRendering
                 text: "第0/0篇"
+                objectName: "read_pageid"
             }
 
             Button {
@@ -204,6 +207,7 @@ Rectangle {
                         width: 500
                         text: ""
                         color: "black"
+                        objectName: "write_sendto"
 
                         background: Rectangle {
                             anchors.fill: parent
@@ -236,6 +240,7 @@ Rectangle {
                         width: 500
                         text: ""
                         color: "black"
+                        objectName: "write_title"
 
                         background: Rectangle {
                             anchors.fill: parent
@@ -257,9 +262,10 @@ Rectangle {
             Button {
                 anchors.right: parent.right
                 anchors.verticalCenter: rect_write_to.verticalCenter
+                anchors.verticalCenterOffset: 10
                 anchors.margins: 10
                 text: "发送"
-                onClicked: listener.login()
+                onClicked: listener.send()
 
                 background: Rectangle {
                     anchors.fill: parent
@@ -296,6 +302,7 @@ Rectangle {
                 anchors.right: parent.right
                 anchors.margins: 20
                 width: parent.width - 20
+                objectName: "write_body"
 
                 color: "black"
                 text: ""

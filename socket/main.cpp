@@ -1,14 +1,71 @@
 #include <stdio.h>
 #include <iostream>
 #include <time.h> 
-#include "client.h"
+#include "mySocket.h"
+#include "base64.h"
 using namespace std;
 int main()
 {
-    string s;
-    cin >> s;
-    string st = Base64::Decode(s);
-    cout << st;
+    MySocket smtpSock("smtp.163.com",25);
+	string send, recv;
+
+	recv = smtpSock.RecvData();
+	//cout << recv << "\n--------\n" << endl;
+
+	//HELO
+	send = "HELO fyc\r\n";
+	smtpSock.SendData(send);
+
+	recv = smtpSock.RecvData();
+	//cout << recv << "\n--------\n" << endl;
+
+	//login
+	send = "AUTH LOGIN\r\n";
+	smtpSock.SendData(send);
+
+	recv = smtpSock.RecvData();
+	//cout << recv << "\n--------\n" << endl;
+	
+	send = "fengyecong@163.com";
+	send = Base64::Encode(send);
+	send += "\r\n";
+	smtpSock.SendData(send);
+
+	recv = smtpSock.RecvData();
+	//cout << recv << "\n--------\n" << endl;
+
+	send = "secret";
+	send = Base64::Encode(send);
+	send += "\r\n";
+	smtpSock.SendData(send);
+	
+	recv = smtpSock.RecvData();
+	//cout << recv << "\n--------\n" << endl;
+
+	//from to
+	smtpSock.SendData("mail from:<fengyecong@163.com>\r\n");
+
+	recv = smtpSock.RecvData();
+	//cout << recv << "\n--------\n" << endl;
+
+	smtpSock.SendData("rcpt to:<houzhe_@whu.edu.cn>\r\n");
+
+	recv = smtpSock.RecvData();
+	//cout << recv << "\n--------\n" << endl;
+
+	//text
+	smtpSock.SendData("data\r\n");
+	smtpSock.SendData("subject:test\r\n");
+	smtpSock.SendData("\r\nmeow!\r\n.\r\n");
+
+	recv = smtpSock.RecvData();
+	//cout << recv << "\n--------\n" << endl;
+
+	//quit
+	smtpSock.SendData("quit\r\n");
+
+	recv = smtpSock.RecvData();
+	//cout << recv << "\n--------\n" << endl;
 }
 // SOCKET clientSock;
 // string str;

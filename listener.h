@@ -4,23 +4,25 @@
 #include <QtCore/QObject>
 #include <QUrl>
 #include <QDebug>
+#include "socket/client.h"
 
 class Listener : public QObject
 {
     Q_OBJECT
 public:
     explicit Listener(QObject *parent = 0);
-    void init_link(QObject *pLoader);
+    QObject *LoginPage, *MainPage, *Account, *Password, *Info, *Text, *PageID, *Sendto, *Title, *Body;
 
 public slots:
     void login();
     void exit();
+    void getPrevious();
+    void getNext();
+    void send();
 
 private:
-    QObject *pLoader;
-
-    void BeforeModify();
-    void AfterModify();
+    int pageID, pageCount;
+    void refresh();
 };
 
 #endif // LISTENER_H

@@ -31,6 +31,7 @@ Rectangle {
                         text: ""
                         color: "black"
                         id: login_input1
+                        objectName: "login_account"
                         focus: true
                         KeyNavigation.tab: login_input2
 
@@ -64,6 +65,7 @@ Rectangle {
                         text: ""
                         color: "black"
                         id: login_input2
+                        objectName: "login_password"
                         KeyNavigation.tab: login_botton
                         echoMode: TextInput.Password
                         passwordCharacter: "*"

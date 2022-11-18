@@ -13,17 +13,22 @@ int main(int argc, char *argv[]) {
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
-    /*********************************/
+    Listener *pListener  = engine.rootObjects().first()->findChild<Listener *>("listener");
+    pListener->LoginPage = engine.rootObjects().first()->findChild<QObject *>("loginpage");
+    pListener->MainPage  = engine.rootObjects().first()->findChild<QObject *>("mainpage");
 
-    Listener * pListener = engine.rootObjects().first()->findChild<Listener *>("m_listener");
-    QObject * pLoader = engine.rootObjects().first()->findChild<QObject *>("m_loader");
+    qDebug() << pListener << pListener->LoginPage << pListener->MainPage;
 
-    pListener->init_link(pLoader);
+    pListener->Account  = engine.rootObjects().first()->findChild<QObject *>("login_account");
+    pListener->Password = engine.rootObjects().first()->findChild<QObject *>("login_password");
 
-//    qDebug() << pListener;
-//    qDebug() << pLoader;
+    pListener->Info     = engine.rootObjects().first()->findChild<QObject *>("read_info");
+    pListener->Text     = engine.rootObjects().first()->findChild<QObject *>("read_text");
+    pListener->PageID   = engine.rootObjects().first()->findChild<QObject *>("read_pageid");
 
-    /*********************************/
+    pListener->Sendto   = engine.rootObjects().first()->findChild<QObject *>("write_sendto");
+    pListener->Title    = engine.rootObjects().first()->findChild<QObject *>("write_title");
+    pListener->Body     = engine.rootObjects().first()->findChild<QObject *>("write_body");
 
     return app.exec();
 }

@@ -2,65 +2,70 @@
 
 //只是对Socket中使用TCP协议的封装
 
-int MySocket::InitClient(SOCKET *sock, string ip, int port)
+MySocket::MySocket(string host_name, int port)
 {
     WSADATA wsaData;//初始化wsaData
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
     {
-        return -1;
+        throw "ERROR IN WSAStartup";
     }
 
     //创建套接字
-    if ((*sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == INVALID_SOCKET)
+    if ((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == INVALID_SOCKET)
     {
         WSACleanup();
-        return -1;
+        throw "ERROR IN CREATING SOCKET";
     }
+    struct hostent *host = gethostbyname(host_name.c_str());
+    if (!host)
+	{
+		throw "ERROR IN GETTING IP ADDRESS";
+	}
+
+    //cout << inet_ntoa(*(struct in_addr*)host->h_addr_list[0]);
 
     struct sockaddr_in serverAddr;
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(port);
-    serverAddr.sin_addr.s_addr = inet_addr(ip.c_str());
+    serverAddr.sin_addr.s_addr = inet_addr(inet_ntoa(*(struct in_addr*)host->h_addr_list[0]));
 
-    if (connect(*sock, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR)
+    if (connect(sock, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR)
     {
-        return -1;
+        throw "ERROR IN CONNECTING SOCKET";
     }
-
-    return 0;
 }
 
-int MySocket::CloseMySocket(SOCKET *sock)
+MySocket::~MySocket()
 {
-    if (closesocket(*sock) == SOCKET_ERROR)
+    if (closesocket(sock) == SOCKET_ERROR)
     {
         WSACleanup();
-        return -1;
+        //throw "ERROR IN CLOSING SOCKET";
     }
-    return 0 ;
 }
 
-int MySocket::RecvData(SOCKET sock, string &data)
+string MySocket::RecvData()
 {
     int bufLen = 255;
     char buf[256];
     int recvLen= 0;
     int iResult;
     buf[bufLen] = '\0';
+    string data;
+
     while (true)
     {
         iResult = recv(sock, buf, bufLen, 0);
         if (iResult < 0)
         {
-            data = "";
-            return -1;
+            throw "ERROR IN RECVING DATA";
         }
 
         recvLen += iResult;
 
         if (iResult == 0)
         {
-            return recvLen;
+            return data;
         }
 
         if (iResult == bufLen)
@@ -72,19 +77,17 @@ int MySocket::RecvData(SOCKET sock, string &data)
         if (iResult > 0 && iResult < bufLen)
         {
             data += buf;
-            return recvLen;
+            return data;
         }
     }
 }
 
-int MySocket::SendData(SOCKET sock, const string data)
+void MySocket::SendData(const string data)
 {
     int iResult = send(sock, data.c_str(), data.length(), 0);
     if (iResult == SOCKET_ERROR) {
-        MySocket::CloseMySocket(&sock);
+        this -> ~MySocket();
         WSACleanup();
-        return -1;
+        throw "ERROR IN SENDING DATA";
     }
-
-    return 0;
 }

@@ -12,13 +12,18 @@ Window {
 
     Listener {
         id: listener
-        objectName: "m_listener"
+        objectName: "listener"
     }
 
-    Loader {
-        id: loader
-        objectName: "m_loader"
-        anchors.fill: parent // 弹出的界面都居中显示
-        source: "LoginPage.qml" // 一开始显示登录页面
+    LoginPage {
+        objectName: "loginpage"
+        anchors.fill: parent
+        visible: true
+    }
+
+    MainPage {
+        objectName: "mainpage"
+        anchors.fill: parent
+        visible: false
     }
 }

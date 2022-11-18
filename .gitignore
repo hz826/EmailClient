@@ -23,7 +23,6 @@ tags
 .DS_Store
 .directory
 *.debug
-Makefile*
 *.prl
 *.app
 moc_*.cpp
@@ -58,6 +57,9 @@ Thumbs.db
 *.opensdf
 *.vcxproj
 *vcxproj.*
+
+# Visual Studio Code generated files
+.vscode
 
 # MinGW generated files
 *.Debug

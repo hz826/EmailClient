@@ -18,5 +18,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     listener.h
+    socket/client.h
 
 DISTFILES +=
