@@ -99,3 +99,89 @@ void SMTP::SendEmail(string fromAddress, string toAddress, string subject, strin
     
 	//cout << recv << "\n--------\n" << endl;
 }
+
+void POP3::Quit(){
+    delete popSock;
+}
+
+void POP3::Login_and_Keep(string emailServer,string username,string password){
+    _emailServer=emailServer;
+    _username=username;
+    _password=password;
+
+    popSock=new MySocket(emailServer,110);
+
+    string send,recv;
+
+    recv=popSock->RecvData();
+    send="user ";
+    send+=username;
+    send+="\r\n";
+    popSock->SendData(send);
+    recv=popSock->RecvData();
+
+    send="pass ";
+    send+=password;
+    send+="\r\n";
+    popSock->SendData(send);
+    recv=popSock->RecvData();
+
+    success_login=((int)recv.find("+OK")!=-1);
+
+}
+
+void POP3::Login(string emailServer,string username,string password){
+    Login_and_Keep(emailServer,username,password);
+    Quit();
+}
+
+string POP3::STAT(){
+    Login_and_Keep(_emailServer,_username,_password);
+
+    string send,recv,save;
+    
+    send="stat";
+    send+="\r\n";
+    popSock->SendData(send);
+    recv=popSock->RecvData();
+    save=recv;
+
+    send="quit\r\n";
+    popSock->SendData(send);
+    recv=popSock->RecvData();
+    Quit();
+
+    int st=save.find("+OK");
+    return save.substr(st+3,-1);
+}
+
+string POP3::RETR(int id){
+    Login_and_Keep(_emailServer,_username,_password);
+
+    string send,recv,save;
+
+    send="retr ";
+    send+=char(id);
+    send+="\r\n";
+    popSock->SendData(send);
+    recv=popSock->RecvData();
+    save=recv;
+
+    popSock->SendData("quit\r\n");
+    recv=popSock->RecvData();
+    Quit();
+
+    int titleSt,titleEd,textSt,textMid,textEd;
+    string title,text;
+
+    titleSt=save.find_last_of("Subject:")+7;//mail title
+    titleEd=save.find("MIME-Version");
+    title=Base64::Decode(save.substr(titleSt+1,titleEd-titleSt-1));
+
+    textSt=save.find("Sender");//mail text
+    textMid=save.find(".com",textSt)+3;
+    textEd=save.find_last_of(".");
+    text=Base64::Decode(save.substr(textMid+1,textEd-1-textMid));
+
+    return title+"\n"+text;
+}

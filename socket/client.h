@@ -20,7 +20,14 @@ class SMTP {
 };
 
 class POP3 {
+    private:
+    MySocket *popSock;
+    bool success_login;
+    void Login_and_Keep(string emailServer, string username, string password);
+    string _emailServer, _username, _password;
+    
     public:
+    POP3(){success_login=false;};
     void Login(string emailServer, string username, string password);
     string STAT();
     string RETR(int id);
