@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <string>
 #include <cstdlib>
+#include <algorithm>
 #include "mySocket.h"
 #include "base64.h"
 using std::string;
@@ -29,8 +30,8 @@ class POP3 {
     public:
     POP3(){success_login=false;};
     void Login(string emailServer, string username, string password);
-    string STAT();
-    string RETR(int id);
+    pair<long long int, long long int> STAT();
+    pair<string,string> RETR(int id);
     void Quit();
 };
 

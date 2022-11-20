@@ -46,9 +46,9 @@ MySocket::~MySocket()
 
 string MySocket::RecvData()
 {
-    int bufLen = 255;
-    char buf[256];
-    int recvLen= 0;
+    const int bufLen = 255;
+    char buf[bufLen+1];
+    int recvLen = 0;
     int iResult;
     buf[bufLen] = '\0';
     string data;
@@ -71,7 +71,7 @@ string MySocket::RecvData()
         if (iResult == bufLen)
         {
             data += buf;
-            ZeroMemory(buf, bufLen);
+            memset(buf, 0, sizeof(buf));
             continue;
         }
         if (iResult > 0 && iResult < bufLen)

@@ -120,14 +120,17 @@ void POP3::Login_and_Keep(string emailServer,string username,string password){
     popSock->SendData(send);
     recv=popSock->RecvData();
 
+
     send="pass ";
     send+=password;
     send+="\r\n";
+    // cout<<send<<endl<<"\n---\n";
     popSock->SendData(send);
     recv=popSock->RecvData();
 
-    success_login=((int)recv.find("+OK")!=-1);
+    // cout<<recv<<endl;
 
+    success_login=((int)recv.find("+OK")!=-1);
 }
 
 void POP3::Login(string emailServer,string username,string password){
@@ -135,7 +138,7 @@ void POP3::Login(string emailServer,string username,string password){
     Quit();
 }
 
-string POP3::STAT(){
+pair<long long int, long long int>  POP3::STAT(){
     Login_and_Keep(_emailServer,_username,_password);
 
     string send,recv,save;
@@ -151,37 +154,63 @@ string POP3::STAT(){
     recv=popSock->RecvData();
     Quit();
 
-    int st=save.find("+OK");
-    return save.substr(st+3,-1);
+    // int st=save.find("+OK");
+
+    pair<long long int, long long int> result;
+    sscanf(save.c_str(), "+OK %I64d %I64d", &result.first, &result.second);
+    return result;
+    // return save.substr(st+3,-1);
 }
 
-string POP3::RETR(int id){
+pair<string,string> POP3::RETR(int id){
     Login_and_Keep(_emailServer,_username,_password);
 
     string send,recv,save;
 
     send="retr ";
-    send+=char(id);
+    send+=std::to_string(id);
     send+="\r\n";
+
     popSock->SendData(send);
-    recv=popSock->RecvData();
-    save=recv;
+    // recv=popSock->RecvData();
+    // save=recv;
+
+    save = "";
+    while (1) {
+        recv=popSock->RecvData();
+        // cout << "---\n" << recv << "\n---\n";
+        save += recv;
+
+        if ((int)recv.find("\r\n.\r\n") != -1) break;
+    }
+    cout << save << endl;
 
     popSock->SendData("quit\r\n");
     recv=popSock->RecvData();
     Quit();
 
-    int titleSt,titleEd,textSt,textMid,textEd;
+    int titleSt,titleEd,textSt,textEd;
     string title,text;
 
-    titleSt=save.find_last_of("Subject:")+7;//mail title
-    titleEd=save.find("MIME-Version");
-    title=Base64::Decode(save.substr(titleSt+1,titleEd-titleSt-1));
+    auto lower_string = [](string str) -> string {
+        transform(str.begin(), str.end(), str.begin(), ::tolower);
+        return str;
+    };
 
-    textSt=save.find("Sender");//mail text
-    textMid=save.find(".com",textSt)+3;
-    textEd=save.find_last_of(".");
-    text=Base64::Decode(save.substr(textMid+1,textEd-1-textMid));
+    titleSt=lower_string(save).find("\r\nsubject:")+10;//mail title
+    while (save[titleSt] == ' ') ++titleSt;
 
-    return title+"\n"+text;
+    // cout << ">>>>>>>>>>>" << save[titleSt] << endl;
+
+    // cout << save.substr(titleSt) << endl;
+
+    titleEd=save.find("\r\n", titleSt);
+    title=save.substr(titleSt,titleEd-titleSt);
+
+    textSt=save.find("\r\n\r\n")+4;//mail text
+    textEd=save.find("\r\n.", textSt);
+    text=Base64::Decode(save.substr(textSt, textEd-textSt)); // 163.com
+    // text=save.substr(textSt, textEd-textSt); // email.whu.edu.cn
+
+    return make_pair(title,text);
 }
