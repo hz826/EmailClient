@@ -138,7 +138,7 @@ POP3::Email POP3::RETR(int id) {
     if (recv.substr(0,3) != "+OK") throw "POP3_RETR : REQUEST FAILED";
 
     recv = regex_replace(recv, regex("\r\n"), "[[CRLF]]");
-    cout << ">>> SMTP_RETR_recv\n" << recv << ">>> SMTP_RETR_recv\n" << endl;
+    // cout << ">>> SMTP_RETR_recv\n" << recv << ">>> SMTP_RETR_recv\n" << endl;
 
     Quit();
 

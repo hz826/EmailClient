@@ -6,13 +6,18 @@ Listener::Listener(QObject *parent) : QObject(parent) {
 }
 
 void Listener::login() {
-    QString account  = Account ->property("text").toString();
-    QString password = Password->property("text").toString();
-    QString server   = "whu.edu.cn";
+    QString account    = Account ->property("text").toString();
+    QString password   = Password->property("text").toString();
+    QString smtpserver = SMTPServ->property("text").toString();
+    QString pop3server = POP3Serv->property("text").toString();
 
     bool success = false;
     try {
-        success = client.Login(server.toStdString(), account.toStdString(), account.toStdString(), password.toStdString());
+        success = client.Login(smtpserver.toStdString(), pop3server.toStdString(), account.toStdString(), password.toStdString());
+
+        auto state = client.GetState();
+        pageCount = state.count;
+        pageID = 1;
     } catch (const char* s) {
         qDebug() << "!!! " << s;
     }
@@ -21,8 +26,8 @@ void Listener::login() {
 
     if (success) {
         Info->setProperty("text", "欢迎" + account);
-        Text->setProperty("text", "");
-        PageID->setProperty("text", "第0/0篇");
+        Text->setProperty("text", "加载中...");
+        PageID->setProperty("text", "第1/1篇");
 
         LoginPage->setProperty("visible", "false");
         MainPage ->setProperty("visible", "true");
@@ -46,13 +51,41 @@ void Listener::exit() {
     MainPage ->setProperty("visible", "false");
 }
 
-void Listener::refresh() {
+void Listener::update_username() {
     QString account  = Account ->property("text").toString();
 
-    pageCount = 5;
+    if (account.endsWith("@163.com")) {
+        SMTPServ->setProperty("text", "smtp.163.com");
+        POP3Serv->setProperty("text", "pop.163.com");
+    }
+
+    if (account.endsWith("@whu.edu.cn")) {
+        SMTPServ->setProperty("text", "smtp.whu.edu.cn");
+        POP3Serv->setProperty("text", "pop.whu.edu.cn");
+    }
+}
+
+void Listener::refresh() {
+    QString account  = Account ->property("text").toString();
+    Text->setProperty("text", "加载中...");
+
+    QString text;
+
+    try {
+        auto email = client.GetEmail(pageCount + 1 - pageID);
+
+        text  = QString("DATE : %1\nFROM : <%2>\nTO : <%3>\n\n%4\n")
+            .arg(QString::fromStdString(email.date))
+            .arg(QString::fromStdString(email.from))
+            .arg(QString::fromStdString(email.to))
+            .arg(QString::fromStdString(email.body));
+    } catch (const char* s) {
+        qDebug() << "!!! " << s;
+        text = "获取邮件内容发生错误";
+    }
 
     Info->setProperty("text", QString("欢迎%1，您有%2封邮件").arg(account).arg(pageCount));
-    Text->setProperty("text", "");
+    Text->setProperty("text", text);
     PageID->setProperty("text", QString("第%1/%2篇").arg(pageID).arg(pageCount));
 }
 

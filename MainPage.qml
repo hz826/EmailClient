@@ -112,8 +112,18 @@ Rectangle {
                 anchors.margins: 10
                 width: parent.width - 20
                 renderType: Text.NativeRendering
+                wrapMode: Text.WordWrap
                 text: "邮件内容加载中..."
                 objectName: "read_text"
+
+//                MouseArea {
+//                    anchors.fill: parent
+//                    drag.target: textEdit
+//                    drag.axis: Drag.YAxis
+//                    drag.minimumY: 480-parent.height
+//                    drag.maximumY: 0
+//                }
+
             }
 
             Text {

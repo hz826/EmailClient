@@ -21,6 +21,8 @@ int main(int argc, char *argv[]) {
 
     pListener->Account  = engine.rootObjects().first()->findChild<QObject *>("login_account");
     pListener->Password = engine.rootObjects().first()->findChild<QObject *>("login_password");
+    pListener->SMTPServ = engine.rootObjects().first()->findChild<QObject *>("smtp_server");
+    pListener->POP3Serv = engine.rootObjects().first()->findChild<QObject *>("pop3_server");
 
     pListener->Info     = engine.rootObjects().first()->findChild<QObject *>("read_info");
     pListener->Text     = engine.rootObjects().first()->findChild<QObject *>("read_text");
