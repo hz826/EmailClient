@@ -1,7 +1,10 @@
-#include <cstdio>
-#include <string>
 #include <cstdlib>
+#include <iostream>
 #include <algorithm>
+#include <map>
+#include <string>
+#include <sstream>
+#include <regex>
 #include "mySocket.h"
 #include "base64.h"
 using std::string;
@@ -9,14 +12,14 @@ using std::string;
 class SMTP {
     private:
     MySocket *smtpSock;
-    string _emailServer, _username, _password;
+    string emailServer, username, password;
     bool success_login;
-    void Login_and_Keep(string emailServer, string username, string password);
+    void Login();
     void Quit();
 
     public:
     SMTP() {success_login = false;}
-    bool Login(string emailServer, string username, string password);
+    bool Verify(string _emailServer, string _username, string _password);
     void SendEmail(string toAddress, string fromAddress, string subject, string text);
 };
 
@@ -24,15 +27,26 @@ class POP3 {
     private:
     MySocket *popSock;
     bool success_login;
-    void Login_and_Keep(string emailServer, string username, string password);
-    string _emailServer, _username, _password;
-    
-    public:
-    POP3(){success_login=false;};
-    void Login(string emailServer, string username, string password);
-    pair<long long int, long long int> STAT();
-    pair<string,string> RETR(int id);
+    string emailServer, username, password;
+
+    void Login();
     void Quit();
+
+    public:
+
+    struct Status {
+        int count, size;
+    };
+
+    struct Email {
+        string date, from, to, subject, body;
+    };
+    
+    POP3() {success_login=false;};
+    bool Verify(string _emailServer, string _username, string _password);
+    Status STAT();
+    Email RETR(int id);
+    
 };
 
 class EmailClient {

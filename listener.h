@@ -4,7 +4,7 @@
 #include <QtCore/QObject>
 #include <QUrl>
 #include <QDebug>
-#include "socket/client.h"
+#include "email/client.h"
 
 class Listener : public QObject
 {
