@@ -14,5 +14,5 @@ public:
     ~MySocket();
 
     void SendData(const string data);
-    string RecvData();
+    string RecvData(const string wait);
 };

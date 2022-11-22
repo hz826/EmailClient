@@ -51,7 +51,7 @@ class POP3 {
 class EmailClient {
     SMTP smtp;
     POP3 pop3;
-    string emailServer, fromAddress, username, password;
+    string smtpServer, pop3Server, fromAddress, username, password;
 
     public:
     bool Login(string emailServer, string fromAddress, string username, string password);

@@ -21,6 +21,7 @@ public slots:
     void send();
 
 private:
+    EmailClient client;
     int pageID, pageCount;
     void refresh();
 };

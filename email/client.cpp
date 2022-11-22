@@ -2,8 +2,7 @@
 
 void SMTP::Quit() {
     smtpSock->SendData("QUIT\r\n");
-    smtpSock->RecvData();
-    success_login = false;
+    smtpSock->RecvData("\r\n");
     delete smtpSock;
 }
 
@@ -11,23 +10,23 @@ void SMTP::Login() {
     smtpSock = new MySocket(emailServer, 25);
 	string send, recv;
 
-	recv = smtpSock->RecvData();
+	recv = smtpSock->RecvData("\r\n");
 
 	send = "HELO fyc\r\n";
 	smtpSock->SendData(send);
-	recv = smtpSock->RecvData();
+	recv = smtpSock->RecvData("\r\n");
 
 	send = "AUTH LOGIN\r\n";
 	smtpSock->SendData(send);
-	recv = smtpSock->RecvData();
+	recv = smtpSock->RecvData("\r\n");
 	
 	send = Base64::Encode(username) + "\r\n";
 	smtpSock->SendData(send);
-	recv = smtpSock->RecvData();
+	recv = smtpSock->RecvData("\r\n");
 
 	send = Base64::Encode(password) + "\r\n";
 	smtpSock->SendData(send);
-	recv = smtpSock->RecvData();
+	recv = smtpSock->RecvData("\r\n");
 
     // cout << ">>> SMTP_login\n" << recv << ">>> SMTP_login\n" << endl;
     success_login = ((int)recv.find("235 Authentication successful") != -1);
@@ -48,11 +47,11 @@ void SMTP::SendEmail(string fromAddress, string toAddress, string subject, strin
 
     send = "mail from:<" + fromAddress + ">\r\n";
 	smtpSock->SendData(send);
-	recv = smtpSock->RecvData();
+	recv = smtpSock->RecvData("\r\n");
 
     send = "rcpt to:<" + toAddress + ">\r\n";
 	smtpSock->SendData(send);
-	recv = smtpSock->RecvData();
+	recv = smtpSock->RecvData("\r\n");
 
     send = "data\r\n";
     smtpSock->SendData(send);
@@ -61,7 +60,7 @@ void SMTP::SendEmail(string fromAddress, string toAddress, string subject, strin
     
     send = "\r\n" + text + "\r\n.\r\n";
     smtpSock->SendData(send);
-	recv = smtpSock->RecvData();
+	recv = smtpSock->RecvData("\r\n");
 
     // cout << ">>> SMTP_send\n" << recv << ">>> SMTP_send\n" << endl;
     Quit();
@@ -69,8 +68,7 @@ void SMTP::SendEmail(string fromAddress, string toAddress, string subject, strin
 
 void POP3::Quit() {
     popSock->SendData("QUIT\r\n");
-    popSock->RecvData();
-    success_login = false;
+    popSock->RecvData("\r\n");
     delete popSock;
 }
 
@@ -79,18 +77,18 @@ void POP3::Login() {
 
     string send,recv;
 
-    recv = popSock->RecvData();
+    recv = popSock->RecvData("\r\n");
 
     send = "USER " + username + "\r\n";
     popSock->SendData(send);
-    recv = popSock->RecvData();
+    recv = popSock->RecvData("\r\n");
 
     send = "PASS " + password + "\r\n";
     popSock->SendData(send);
-    recv = popSock->RecvData();
+    recv = popSock->RecvData("\r\n");
 
+    // cout << ">>> POP3_login\n" << recv << ">>> POP3_login\n" << endl;
     success_login = ((int)recv.find("+OK") != -1);
-    // cout << ">>> SMTP_login\n" << recv << ">>> SMTP_login\n" << endl;
 }
 
 bool POP3::Verify(string _emailServer, string _username, string _password) {
@@ -104,13 +102,13 @@ bool POP3::Verify(string _emailServer, string _username, string _password) {
 
 POP3::Status POP3::STAT() {
     Login();
-    if (!success_login) throw "POP3_STAT : UNSUCCESSD LOGIN";
+    if (!success_login) throw "POP3_STAT : LOGIN FAILED";
 
     string send, recv;
     
     send = "STAT\r\n";
     popSock->SendData(send);
-    recv = popSock->RecvData();
+    recv = popSock->RecvData("\r\n");
 
     Quit();
 
@@ -126,29 +124,26 @@ POP3::Status POP3::STAT() {
 
 POP3::Email POP3::RETR(int id) {
     Login();
-    if (!success_login) throw "POP3_RETR : UNSUCCESSD LOGIN";
+    if (!success_login) throw "POP3_RETR : LOGIN FAILED";
 
-    string send, recv, save;
+    string send, recv;
     regex pattern;
     Email email;
 
     send = "RETR " + std::to_string(id) + "\r\n";
     popSock->SendData(send);
 
-    save = "";
-    do {
-        recv = popSock->RecvData();
-        save += recv;
-        // cout << ">>> SMTP_RETR_RECVING\n" << save << ">>> SMTP_RETR_RECVING\n" << endl;
-    } while ((int)recv.find("\r\n.\r\n") == -1);
+    recv = popSock->RecvData("\r\n.\r\n");
 
-    save = regex_replace(save, regex("\r\n"), "[[CRLF]]");
-    cout << ">>> SMTP_RETR_SAVE\n" << save << ">>> SMTP_RETR_SAVE\n" << endl;
+    if (recv.substr(0,3) != "+OK") throw "POP3_RETR : REQUEST FAILED";
+
+    recv = regex_replace(recv, regex("\r\n"), "[[CRLF]]");
+    cout << ">>> SMTP_RETR_recv\n" << recv << ">>> SMTP_RETR_recv\n" << endl;
 
     Quit();
 
     pattern = regex("\\[\\[CRLF\\]\\]\\[\\[CRLF\\]\\]");
-    vector<string> split0(sregex_token_iterator(save.begin(), save.end(), pattern, -1), sregex_token_iterator());
+    vector<string> split0(sregex_token_iterator(recv.begin(), recv.end(), pattern, -1), sregex_token_iterator());
     string header = split0[0];
     string body   = split0[1];
     if (split0.size() != 2) throw "POP3_RETR : SYNTAX ERROR";
@@ -180,15 +175,17 @@ POP3::Email POP3::RETR(int id) {
     return email;
 }
 
-bool EmailClient::Login(string _emailServer, string _fromAddress, string _username, string _password) {
-    emailServer = _emailServer;
-    fromAddress = _fromAddress;
+bool EmailClient::Login(string _smtpServer, string _pop3Server, string _username, string _password) {
+    smtpServer  = _smtpServer;
+    pop3Server  = _pop3Server;
+    fromAddress = _username;
     username    = _username;
     password    = _password;
 
-    bool f1 = smtp.Verify(emailServer, username, password);
-    bool f2 = pop3.Verify(emailServer, username, password);
+    bool f1 = smtp.Verify(smtpServer, username, password);
+    bool f2 = pop3.Verify(pop3Server, username, password);
 
+    // cout << f1 << f2 << endl;
     return f1 && f2;
 }
 

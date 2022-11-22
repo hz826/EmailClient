@@ -8,9 +8,18 @@ Listener::Listener(QObject *parent) : QObject(parent) {
 void Listener::login() {
     QString account  = Account ->property("text").toString();
     QString password = Password->property("text").toString();
-    qDebug() << "login" << account << password;
+    QString server   = "whu.edu.cn";
 
-    if (true) {
+    bool success = false;
+    try {
+        success = client.Login(server.toStdString(), account.toStdString(), account.toStdString(), password.toStdString());
+    } catch (const char* s) {
+        qDebug() << "!!! " << s;
+    }
+
+    qDebug() << "login with" << account << password << success;
+
+    if (success) {
         Info->setProperty("text", "欢迎" + account);
         Text->setProperty("text", "");
         PageID->setProperty("text", "第0/0篇");
@@ -26,6 +35,12 @@ void Listener::login() {
 }
 
 void Listener::exit() {
+    try {
+        client.Quit();
+    } catch (const char* s) {
+        qDebug() << "!!! " << s;
+    }
+
     qDebug() << "exit";
     LoginPage->setProperty("visible", "true");
     MainPage ->setProperty("visible", "false");

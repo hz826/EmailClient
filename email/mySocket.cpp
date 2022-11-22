@@ -44,7 +44,7 @@ MySocket::~MySocket()
     }
 }
 
-string MySocket::RecvData()
+string MySocket::RecvData(const string wait)
 {
     const int bufLen = 255;
     char buf[bufLen+1];
@@ -53,7 +53,7 @@ string MySocket::RecvData()
     buf[bufLen] = '\0';
     string data;
 
-    while (true)
+    while ((int)data.find(wait) == -1)
     {
         iResult = recv(sock, buf, bufLen, 0);
         if (iResult < 0)
@@ -74,12 +74,16 @@ string MySocket::RecvData()
             memset(buf, 0, sizeof(buf));
             continue;
         }
+
         if (iResult > 0 && iResult < bufLen)
         {
             data += buf;
-            return data;
+            memset(buf, 0, sizeof(buf));
+            continue;
         }
     }
+
+    return data;
 }
 
 void MySocket::SendData(const string data)
