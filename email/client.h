@@ -46,14 +46,17 @@ class POP3 {
     bool Verify(string _emailServer, string _username, string _password);
     Status STAT();
     Email RETR(int id);
-    
 };
 
 class EmailClient {
+    SMTP smtp;
+    POP3 pop3;
+    string emailServer, fromAddress, username, password;
+
     public:
-    void Login(string emailServer, string fromAddress, string username, string password);
-    string GetState();
-    string GetEmail(int id);
-    void SendEmail(string toAddress, string text);
+    bool Login(string emailServer, string fromAddress, string username, string password);
+    POP3::Status GetState();
+    POP3::Email  GetEmail(int id);
+    void SendEmail(string toAddress, string subject, string body);
     void Quit();
 };

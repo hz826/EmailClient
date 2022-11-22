@@ -151,6 +151,7 @@ POP3::Email POP3::RETR(int id) {
     vector<string> split0(sregex_token_iterator(save.begin(), save.end(), pattern, -1), sregex_token_iterator());
     string header = split0[0];
     string body   = split0[1];
+    if (split0.size() != 2) throw "POP3_RETR : SYNTAX ERROR";
 
     pattern = regex("\\[\\[CRLF\\]\\][\\w-]*:\\s?");
     vector<string> keys  (sregex_token_iterator(header.begin(), header.end(), pattern,  0), sregex_token_iterator());
@@ -169,7 +170,7 @@ POP3::Email POP3::RETR(int id) {
         header_splited[k] = v;
     }
 
-    body = regex_replace(body, regex("\\[\\[CRLF\\]\\]\\.\\[\\[CRLF\\]\\]*"), "");
+    body = regex_replace(body, regex("\\[\\[CRLF\\]\\][.]\\[\\[CRLF\\]\\]*"), "");
 
     email.date    = header_splited["DATE"];
     email.from    = header_splited["SENDER"];
@@ -177,4 +178,32 @@ POP3::Email POP3::RETR(int id) {
     email.subject = header_splited["SUBJECT"];
     email.body    = body;
     return email;
+}
+
+bool EmailClient::Login(string _emailServer, string _fromAddress, string _username, string _password) {
+    emailServer = _emailServer;
+    fromAddress = _fromAddress;
+    username    = _username;
+    password    = _password;
+
+    bool f1 = smtp.Verify(emailServer, username, password);
+    bool f2 = pop3.Verify(emailServer, username, password);
+
+    return f1 && f2;
+}
+
+POP3::Status EmailClient::GetState() {
+    return pop3.STAT();
+}
+
+POP3::Email EmailClient::GetEmail(int id) {
+    return pop3.RETR(id);
+}
+
+void EmailClient::SendEmail(string toAddress, string subject, string body) {
+    smtp.SendEmail(fromAddress, toAddress, subject, body);
+}
+
+void EmailClient::Quit() {
+
 }
