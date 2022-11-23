@@ -22,10 +22,12 @@ public slots:
     void update_username();
 
 private:
+    map<int,POP3::Email> cache;
     EmailClient client;
     int pageID, pageCount;
     void refresh();
     void autocomplete();
+    void getemail(int id);
 };
 
 #endif // LISTENER_H

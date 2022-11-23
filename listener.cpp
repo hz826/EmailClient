@@ -65,6 +65,14 @@ void Listener::update_username() {
     }
 }
 
+void Listener::getemail(int id) {
+    if (id < 1 || id > pageCount) return ;
+    if (cache.find(id) != cache.end()) return ;
+
+    auto email = client.GetEmail(pageCount + 1 - pageID);
+    cache[id] = email;
+}
+
 void Listener::refresh() {
     QString account  = Account ->property("text").toString();
     Text->setProperty("text", "加载中...");
@@ -72,12 +80,14 @@ void Listener::refresh() {
     QString text;
 
     try {
-        auto email = client.GetEmail(pageCount + 1 - pageID);
+        getemail(pageID);
+        auto email = cache[pageID];
 
-        text  = QString("DATE : %1\nFROM : <%2>\nTO : <%3>\n\n%4\n")
+        text  = QString("DATE : %1\nFROM : %2\nTO : %3\n\nSUBJECT : %4\n\n%5\n")
             .arg(QString::fromStdString(email.date))
             .arg(QString::fromStdString(email.from))
             .arg(QString::fromStdString(email.to))
+            .arg(QString::fromStdString(email.subject))
             .arg(QString::fromStdString(email.body));
     } catch (const char* s) {
         qDebug() << "!!! " << s;
@@ -87,6 +97,15 @@ void Listener::refresh() {
     Info->setProperty("text", QString("欢迎%1，您有%2封邮件").arg(account).arg(pageCount));
     Text->setProperty("text", text);
     PageID->setProperty("text", QString("第%1/%2篇").arg(pageID).arg(pageCount));
+
+//    try {
+//        for (int i=1;i<=5;i++) {
+//            getemail(pageID+i);
+//            getemail(pageID-i);
+//        }
+//    } catch (const char* s) {
+//        qDebug() << "!!! " << s;
+//    }
 }
 
 void Listener::getPrevious() {

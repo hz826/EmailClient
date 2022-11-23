@@ -127,7 +127,6 @@ POP3::Email POP3::RETR(int id) {
     if (!success_login) throw "POP3_RETR : LOGIN FAILED";
 
     string send, recv;
-    regex pattern;
     Email email;
 
     send = "RETR " + std::to_string(id) + "\r\n";
@@ -138,19 +137,18 @@ POP3::Email POP3::RETR(int id) {
     if (recv.substr(0,3) != "+OK") throw "POP3_RETR : REQUEST FAILED";
 
     recv = regex_replace(recv, regex("\r\n"), "[[CRLF]]");
-    // cout << ">>> SMTP_RETR_recv\n" << recv << ">>> SMTP_RETR_recv\n" << endl;
+//    cout << ">>> SMTP_RETR_recv\n" << recv << ">>> SMTP_RETR_recv\n" << endl;
 
     Quit();
 
-    pattern = regex("\\[\\[CRLF\\]\\]\\[\\[CRLF\\]\\]");
-    vector<string> split0(sregex_token_iterator(recv.begin(), recv.end(), pattern, -1), sregex_token_iterator());
-    string header = split0[0];
-    string body   = split0[1];
-    if (split0.size() != 2) throw "POP3_RETR : SYNTAX ERROR";
+    string pattern0 = "[[CRLF]][[CRLF]]";
+    int index = recv.find(pattern0);
+    string header = recv.substr(0, index);
+    string body   = recv.substr(index+pattern0.length());
 
-    pattern = regex("\\[\\[CRLF\\]\\][\\w-]*:\\s?");
-    vector<string> keys  (sregex_token_iterator(header.begin(), header.end(), pattern,  0), sregex_token_iterator());
-    vector<string> values(sregex_token_iterator(header.begin(), header.end(), pattern, -1), sregex_token_iterator());
+    regex pattern1("\\[\\[CRLF\\]\\][\\w-]*:\\s?");
+    vector<string> keys  (sregex_token_iterator(header.begin(), header.end(), pattern1,  0), sregex_token_iterator());
+    vector<string> values(sregex_token_iterator(header.begin(), header.end(), pattern1, -1), sregex_token_iterator());
 
     map<string,string> header_splited;
     for (int i=0;i<(int)keys.size();i++) {
@@ -168,10 +166,16 @@ POP3::Email POP3::RETR(int id) {
     body = regex_replace(body, regex("\\[\\[CRLF\\]\\][.]\\[\\[CRLF\\]\\]*"), "");
 
     email.date    = header_splited["DATE"];
-    email.from    = header_splited["SENDER"];
+    email.from    = header_splited["FROM"];
     email.to      = header_splited["TO"];
     email.subject = header_splited["SUBJECT"];
     email.body    = body;
+
+    // email.body = "";
+    // for (auto p : header_splited) {
+    //     email.body += p.first + "->" + p.second + "\n";
+    // }
+
     return email;
 }
 
