@@ -6,6 +6,7 @@ Listener::Listener(QObject *parent) : QObject(parent) {
 }
 
 void Listener::login() {
+    cache.clear();
     QString account    = Account ->property("text").toString();
     QString password   = Password->property("text").toString();
     QString smtpserver = SMTPServ->property("text").toString();
@@ -127,4 +128,10 @@ void Listener::send() {
     QString title  = Title ->property("text").toString();
     QString body   = Body  ->property("text").toString();
     qDebug() << "send" << sendto << title << body;
+
+    try {
+        client.SendEmail(sendto.toStdString(), title.toStdString(), body.toStdString());
+    } catch (const char* s) {
+        qDebug() << "!!! " << s;
+    }
 }
