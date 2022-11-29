@@ -11,7 +11,7 @@ class Listener : public QObject
     Q_OBJECT
 public:
     explicit Listener(QObject *parent = 0);
-    QObject *LoginPage, *MainPage, *Account, *Password, *SMTPServ, *POP3Serv, *Info, *Text, *PageID, *Sendto, *Title, *Body;
+    QObject *LoginPage, *MainPage, *Account, *Password, *SMTPServ, *POP3Serv, *Info, *Text, *Vbar, *PageID, *Sendto, *Title, *Body;
 
 public slots:
     void login();

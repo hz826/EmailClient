@@ -3,5 +3,7 @@
         <file>main.qml</file>
         <file>MainPage.qml</file>
         <file>LoginPage.qml</file>
+        <file>MButton.qml</file>
+        <file>MInput.qml</file>
     </qresource>
 </RCC>

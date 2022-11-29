@@ -84,7 +84,7 @@ void Listener::refresh() {
         getemail(pageID);
         auto email = cache[pageID];
 
-        text  = QString("DATE : %1\nFROM : %2\nTO : %3\n\nSUBJECT : %4\n\n%5\n")
+        text  = QString("DATE   : %1\nFROM   : %2\nTO     : %3\nSUBJECT: %4\n\n%5\n")
             .arg(QString::fromStdString(email.date))
             .arg(QString::fromStdString(email.from))
             .arg(QString::fromStdString(email.to))
@@ -98,6 +98,7 @@ void Listener::refresh() {
     Info->setProperty("text", QString("欢迎%1，您有%2封邮件").arg(account).arg(pageCount));
     Text->setProperty("text", text);
     PageID->setProperty("text", QString("第%1/%2篇").arg(pageID).arg(pageCount));
+    Vbar->setProperty("position", 0);
 
 //    try {
 //        for (int i=1;i<=5;i++) {

@@ -20,163 +20,59 @@ Rectangle {
             Column {
                 spacing: 20
 
-                Row {
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: text_width
-                        renderType: Text.NativeRendering
-                        text: "账号:"
-                    }
+                MInput {
+                    id: login_input1
+                    input.objectName: "login_account"
+                    hint.width: text_width
+                    input.width: input_width
 
-                    TextField {
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: input_width
-                        text: ""
-                        color: "black"
-                        id: login_input1
-                        objectName: "login_account"
-                        focus: true
-                        KeyNavigation.tab: login_input2
-                        onEditingFinished: listener.update_username()
+                    hint.text: "账号:"
 
-                        background: Rectangle {
-                            anchors.fill: parent
-                            border.width: 1
-                            border.color: "black"
-
-                            Rectangle {
-                                anchors.fill: parent
-                                anchors.leftMargin: 0
-                                anchors.topMargin: 0
-                                anchors.rightMargin: 0
-                                anchors.bottomMargin: 1
-                            }
-                        }
-                    }
+//                    input.KeyNavigation.tab: login_input2
+                    input.onEditingFinished: listener.update_username()
+                    input.focus: true
                 }
 
-                Row {
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: text_width
-                        renderType: Text.NativeRendering
-                        text: "密码:"
-                    }
+                MInput {
+                    id: login_input2
+                    input.objectName: "login_password"
+                    hint.width: text_width
+                    input.width: input_width
 
-                    TextField {
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: input_width
-                        text: ""
-                        color: "black"
-                        id: login_input2
-                        objectName: "login_password"
-                        KeyNavigation.tab: login_botton
-                        echoMode: TextInput.Password
-                        passwordCharacter: "*"
-                        passwordMaskDelay: 1500
+                    hint.text: "密码:"
 
-                        background: Rectangle {
-                            anchors.fill: parent
-                            border.width: 1
-                            border.color: "black"
-
-                            Rectangle {
-                                anchors.fill: parent
-                                anchors.leftMargin: 0
-                                anchors.topMargin: 0
-                                anchors.rightMargin: 0
-                                anchors.bottomMargin: 1
-                            }
-                        }
-                    }
+//                    KeyNavigation.tab: login_botton
+                    input.echoMode: TextInput.Password
+                    input.passwordCharacter: "*"
+                    input.passwordMaskDelay: 1500
                 }
 
-                Row {
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: text_width
-                        renderType: Text.NativeRendering
-                        text: "SMTP服务器:"
-                    }
+                MInput {
+                    id: login_input3
+                    input.objectName: "smtp_server"
+                    hint.width: text_width
+                    input.width: input_width
 
-                    TextField {
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: input_width
-                        text: ""
-                        color: "black"
-                        id: login_input3
-                        objectName: "smtp_server"
-
-                        background: Rectangle {
-                            anchors.fill: parent
-                            border.width: 1
-                            border.color: "black"
-
-                            Rectangle {
-                                anchors.fill: parent
-                                anchors.leftMargin: 0
-                                anchors.topMargin: 0
-                                anchors.rightMargin: 0
-                                anchors.bottomMargin: 1
-                            }
-                        }
-                    }
+                    hint.text: "SMTP服务器:"
                 }
 
-                Row {
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: text_width
-                        renderType: Text.NativeRendering
-                        text: "POP3服务器:"
-                    }
+                MInput {
+                    id: login_input4
+                    input.objectName: "pop3_server"
+                    hint.width: text_width
+                    input.width: input_width
 
-                    TextField {
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: input_width
-                        text: ""
-                        color: "black"
-                        id: login_input4
-                        objectName: "pop3_server"
-
-                        background: Rectangle {
-                            anchors.fill: parent
-                            border.width: 1
-                            border.color: "black"
-
-                            Rectangle {
-                                anchors.fill: parent
-                                anchors.leftMargin: 0
-                                anchors.topMargin: 0
-                                anchors.rightMargin: 0
-                                anchors.bottomMargin: 1
-                            }
-                        }
-                    }
+                    hint.text: "POP3服务器:"
                 }
             }
 
-            Button {
+            MButton {
                 anchors.verticalCenter: parent.verticalCenter
-                text: "登录"
+                KeyNavigation.tab: login_input1
                 id: login_botton
+                text: "登录"
                 onClicked: listener.login()
                 Keys.onEnterPressed: listener.login()
-                KeyNavigation.tab: login_input1
-
-                background: Rectangle {
-                    anchors.fill: parent
-                    border.width: 1
-                    border.color: "black"
-
-                    Rectangle {
-                        anchors.fill: parent
-                        anchors.leftMargin: 0
-                        anchors.topMargin: 0
-                        anchors.rightMargin: 0
-                        anchors.bottomMargin: 1
-                    }
-                }
             }
         }
     }

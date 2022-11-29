@@ -164,6 +164,7 @@ POP3::Email POP3::RETR(int id) {
     }
 
     body = regex_replace(body, regex("\\[\\[CRLF\\]\\][.]\\[\\[CRLF\\]\\]*"), "");
+    body = regex_replace(body, regex("\\[\\[CRLF\\]\\]"), "\n");
 
     email.date    = header_splited["DATE"];
     email.from    = header_splited["FROM"];

@@ -27,6 +27,7 @@ int main(int argc, char *argv[]) {
     pListener->Info     = engine.rootObjects().first()->findChild<QObject *>("read_info");
     pListener->Text     = engine.rootObjects().first()->findChild<QObject *>("read_text");
     pListener->PageID   = engine.rootObjects().first()->findChild<QObject *>("read_pageid");
+    pListener->Vbar     = engine.rootObjects().first()->findChild<QObject *>("read_vbar");
 
     pListener->Sendto   = engine.rootObjects().first()->findChild<QObject *>("write_sendto");
     pListener->Title    = engine.rootObjects().first()->findChild<QObject *>("write_title");
