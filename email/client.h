@@ -46,6 +46,7 @@ class POP3 {
     bool Verify(string _emailServer, string _username, string _password);
     Status STAT();
     Email RETR(int id);
+    void DELE(int id);
 };
 
 class EmailClient {
@@ -55,8 +56,11 @@ class EmailClient {
 
     public:
     bool Login(string emailServer, string fromAddress, string username, string password);
+    void Quit();
+
     POP3::Status GetState();
     POP3::Email  GetEmail(int id);
+    void         DeleteEmail(int id);
+
     void SendEmail(string toAddress, string subject, string body);
-    void Quit();
 };

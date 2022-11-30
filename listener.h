@@ -19,6 +19,7 @@ public slots:
     void getPrevious();
     void getNext();
     void send();
+    void del();
     void update_username();
 
 private:

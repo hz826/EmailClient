@@ -136,3 +136,13 @@ void Listener::send() {
         qDebug() << "!!! " << s;
     }
 }
+
+void Listener::del() {
+    try {
+        client.DeleteEmail(pageCount + 1 - pageID);
+    } catch (const char* s) {
+        qDebug() << "!!! " << s;
+    }
+
+    refresh();
+}

@@ -180,6 +180,22 @@ POP3::Email POP3::RETR(int id) {
     return email;
 }
 
+void POP3::DELE(int id) {
+    Login();
+    if (!success_login) throw "POP3_DELE : LOGIN FAILED";
+
+    string send, recv;
+    Email email;
+
+    send = "DELE " + std::to_string(id) + "\r\n";
+    popSock->SendData(send);
+
+    recv = popSock->RecvData("\r\n");
+
+    cout << send << endl << recv << endl;
+    if (recv.substr(0,3) != "+OK") throw "POP3_DELE : REQUEST FAILED";
+}
+
 bool EmailClient::Login(string _smtpServer, string _pop3Server, string _username, string _password) {
     smtpServer  = _smtpServer;
     pop3Server  = _pop3Server;
@@ -200,6 +216,10 @@ POP3::Status EmailClient::GetState() {
 
 POP3::Email EmailClient::GetEmail(int id) {
     return pop3.RETR(id);
+}
+
+void EmailClient::DeleteEmail(int id) {
+    pop3.DELE(id);
 }
 
 void EmailClient::SendEmail(string toAddress, string subject, string body) {
